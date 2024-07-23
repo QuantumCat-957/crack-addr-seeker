@@ -1,0 +1,62 @@
+[package]
+name = "crack-addr-seeker"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+coins-bip39 = "0.8.7"
+coins-bip32 = "0.8.7"
+anyhow = "1"
+
+num_cpus = "1.16.0"
+
+alloy = { git = "https://github.com/alloy-rs/alloy", features = [
+    "network",
+    # "signer-mnemonic",
+    "signers",
+] }
+
+anychain-tron = "0.2.3"
+anychain-core = "0.1.6"
+libsecp256k1 = { version = "0.7.1" }
+
+tracing = "0.1.31"
+tracing-subscriber = { version = "0.3" }
+
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+csv = "1.1"
+
+chrono = "0.4.38"
+
+[profile.dev]
+codegen-units = 4
+debug = true
+debug-assertions = true
+incremental = true
+lto = false
+opt-level = 0
+overflow-checks = false
+panic = 'unwind'
+rpath = false
+
+[profile.release]
+codegen-units = 1
+debug = false
+debug-assertions = false
+incremental = false
+lto = "thin"
+opt-level = 3
+overflow-checks = false
+panic = 'unwind'
+rpath = false
+
+[profile.test]
+codegen-units = 16
+debug = true
+debug-assertions = true
+incremental = true
+lto = false
+opt-level = 0
+overflow-checks = true
+rpath = false
