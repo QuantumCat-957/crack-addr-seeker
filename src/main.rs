@@ -34,8 +34,10 @@ fn main() -> Result<(), anyhow::Error> {
     let (tx, rx) = mpsc::channel::<write::AddressRecord>();
     let tx = Arc::new(tx);
 
-    // 启动一个线程来处理写入文件任务
-    let writer_handle = write::start_writer_thread(rx);
+    let max_file_size = 100 * 1024 * 1024; // 100 MB
+    let rotation_interval = std::time::Duration::from_secs(3600); // 1 hour
+                                                                  // 启动一个线程来处理写入文件任务
+    let writer_handle = write::start_writer_thread(rx, max_file_size, rotation_interval);
 
     // 启动计时器线程，每秒输出生成的地址数
     let timer_handle = timer::start_timer_thread(running_clone, generated_count_clone);
