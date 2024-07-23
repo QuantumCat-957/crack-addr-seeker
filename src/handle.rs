@@ -28,8 +28,6 @@ pub(crate) fn handle(
                     move || {
                         while running.load(Ordering::Acquire) {
                             let index = index_counter.load(Ordering::Relaxed) as u32;
-                            //
-                            // 生成以太坊地址
                             let address = generator.generate_address(&value, index);
                             if let Ok(address) = address {
                                 if crate::address::check_address(&address) {
@@ -47,8 +45,8 @@ pub(crate) fn handle(
                                 crate::address::write_last_index(&index_file_name, index as u32)
                                     .ok();
                             }
-                            index_counter.fetch_add(1, Ordering::Relaxed) as u32;
                             // 获取并增加索引
+                            index_counter.fetch_add(1, Ordering::Relaxed) as u32;
                         }
                     }
                 }
