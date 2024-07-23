@@ -1,24 +1,19 @@
 mod address;
 mod constant;
+mod index;
 mod language;
+mod timer;
+mod write;
 mod xpriv;
 
 use std::{
-    fs::OpenOptions,
     sync::{
         atomic::{AtomicBool, AtomicUsize, Ordering},
         mpsc::{self},
         Arc,
     },
     thread,
-    time::{Duration, Instant},
 };
-
-struct AddressRecord {
-    address: String,
-    index: u32,
-    address_type: String,
-}
 
 fn main() -> Result<(), anyhow::Error> {
     tracing_subscriber::fmt::init();
@@ -36,56 +31,14 @@ fn main() -> Result<(), anyhow::Error> {
     let tron_index_file = "tron_last_index.txt";
 
     // 创建一个通道，用于发送地址写入任务
-    let (tx, rx) = mpsc::channel::<AddressRecord>();
+    let (tx, rx) = mpsc::channel::<write::AddressRecord>();
     let tx = Arc::new(tx);
 
     // 启动一个线程来处理写入文件任务
-    let writer_handle = thread::spawn(move || {
-        let eth_file = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open("eth_addresses.csv")
-            .expect("Failed to open file");
-        let tron_file = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open("tron_addresses.csv")
-            .expect("Failed to open file");
-        let mut eth_writer = csv::Writer::from_writer(eth_file);
-        let mut tron_writer = csv::Writer::from_writer(tron_file);
-
-        for record in rx {
-            match record.address_type.as_str() {
-                "eth" => {
-                    eth_writer
-                        .write_record(&[record.address, record.index.to_string()])
-                        .expect("Failed to write to file");
-                }
-                "tron" => {
-                    tron_writer
-                        .write_record(&[record.address, record.index.to_string()])
-                        .expect("Failed to write to file");
-                }
-                _ => {}
-            }
-        }
-    });
+    let writer_handle = write::start_writer_thread(rx);
 
     // 启动计时器线程，每秒输出生成的地址数
-    let timer_handle = thread::spawn(move || {
-        let start = Instant::now();
-        let mut last_count = 0;
-        while running_clone.load(Ordering::SeqCst) {
-            thread::sleep(Duration::from_secs(1));
-            let elapsed = start.elapsed().as_secs();
-            if elapsed > 0 {
-                let count = generated_count_clone.load(Ordering::SeqCst);
-                let per_sec = count - last_count;
-                last_count = count;
-                tracing::info!("Addresses generated per second: {}", per_sec);
-            }
-        }
-    });
+    let timer_handle = timer::start_timer_thread(running_clone, generated_count_clone);
 
     let last_eth_index = address::read_last_index(eth_index_file)?;
     let last_tron_index = address::read_last_index(tron_index_file)?;
@@ -107,7 +60,7 @@ fn main() -> Result<(), anyhow::Error> {
                         let address = address::ethereum_address(&value, index);
                         if let Ok(address) = address {
                             if address::check_address(&address) {
-                                let record = AddressRecord {
+                                let record = write::AddressRecord {
                                     address,
                                     index,
                                     address_type: "eth".to_string(),
@@ -143,7 +96,7 @@ fn main() -> Result<(), anyhow::Error> {
                         let address = address::tron_address(&value, index);
                         if let Ok(address) = address {
                             if address::check_address(&address) {
-                                let record = AddressRecord {
+                                let record = write::AddressRecord {
                                     address,
                                     index,
                                     address_type: "tron".to_string(),

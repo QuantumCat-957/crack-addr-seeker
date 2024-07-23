@@ -47,22 +47,6 @@ pub(crate) fn check_address(address: &str) -> bool {
 //     Ok(())
 // }
 
-pub(crate) fn save_address(
-    address: &str,
-    index: u32,
-    tx: &std::sync::mpsc::Sender<(String, u32, String)>,
-) -> Result<(), anyhow::Error> {
-    let address_type = match address.starts_with("0x") {
-        true => "eth",
-        false => "tron",
-    };
-
-    tx.send((address.to_string(), index, address_type.to_string()))
-        .map_err(|e| anyhow::anyhow!("Failed to send address: {}", e))?;
-
-    Ok(())
-}
-
 pub(crate) fn write_last_index(filename: &str, index: u32) -> Result<(), anyhow::Error> {
     std::fs::write(filename, index.to_string())?;
     Ok(())
