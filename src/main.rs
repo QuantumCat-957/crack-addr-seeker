@@ -1,4 +1,5 @@
 mod address;
+mod config;
 mod constant;
 mod handle;
 mod language;
@@ -12,18 +13,19 @@ use std::sync::{
     Arc,
 };
 
+use clap::Parser as _;
 use handle::handle;
 
 fn main() -> Result<(), anyhow::Error> {
     tracing_subscriber::fmt::init();
 
-    // 从命令行参数中读取 `phrase` 和 `bip39_pw`，如果没有提供则使用默认值
-    let args: Vec<String> = std::env::args().collect();
-    let phrase = args.get(1).map_or_else(
-        || "fan swamp loop mesh enact tennis priority artefact canal hour skull joy".to_string(),
-        |s| s.clone(),
-    );
-    let bip39_pw = args.get(2).map_or_else(|| "".to_string(), |s| s.clone());
+    // 从命令行参数中读取 `phrase` 和 `password`，如果没有提供则使用默认值
+    let cli = config::Cli::parse();
+
+    let phrase = cli.phrase;
+    let bip39_pw = cli.password;
+    let max_file_size = cli.max_file_size;
+    let rotation_interval_secs = cli.rotation_interval_secs;
 
     let (key, _) = xpriv::phrase_to_master_key(1, &phrase, &bip39_pw)?;
     let running = Arc::new(AtomicBool::new(true));
@@ -35,10 +37,9 @@ fn main() -> Result<(), anyhow::Error> {
     let (tx, rx) = mpsc::channel::<write::AddressRecord>();
     let tx = Arc::new(tx);
 
-    let max_file_size = 100 * 1024 * 1024; // 100 MB
-    let rotation_interval = std::time::Duration::from_secs(3600); // 1 hour
-                                                                  // 启动一个线程来处理写入文件任务
-    let writer_handle = write::start_writer_thread(rx, max_file_size, rotation_interval);
+    let rotation_interval = std::time::Duration::from_secs(rotation_interval_secs); // 1 hour
+                                                                                    // 启动一个线程来处理写入文件任务
+    let writer_handle = write::start_writer_thread(rx, max_file_size as u64, rotation_interval);
 
     // 启动计时器线程，每秒输出生成的地址数
     let timer_handle = timer::start_timer_thread(running_clone, generated_count_clone);
