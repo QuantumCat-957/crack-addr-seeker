@@ -17,8 +17,13 @@ use handle::handle;
 fn main() -> Result<(), anyhow::Error> {
     tracing_subscriber::fmt::init();
 
-    let phrase = "fan swamp loop mesh enact tennis priority artefact canal hour skull joy";
-    let bip39_pw = "123";
+    // 从命令行参数中读取 `phrase` 和 `bip39_pw`，如果没有提供则使用默认值
+    let args: Vec<String> = std::env::args().collect();
+    let phrase = args.get(1).map_or_else(
+        || "fan swamp loop mesh enact tennis priority artefact canal hour skull joy".to_string(),
+        |s| s.clone(),
+    );
+    let bip39_pw = args.get(2).map_or_else(|| "".to_string(), |s| s.clone());
 
     let (key, _) = xpriv::phrase_to_master_key(1, &phrase, &bip39_pw)?;
     let running = Arc::new(AtomicBool::new(true));
