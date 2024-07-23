@@ -12,9 +12,9 @@ pub trait AddressGenerator: Copy {
     fn index_file_name(&self) -> String;
 }
 
-pub(crate) fn check_address(address: &str) -> bool {
+pub(crate) fn check_address(address: &str, match_length: usize) -> bool {
     let len = address.len();
-    address[len - 4..]
+    address[len - match_length..]
         .chars()
         .all(|c| c == address.chars().nth(len - 1).unwrap())
 }

@@ -5,12 +5,13 @@ use std::sync::{
 
 use coins_bip32::xkeys::XPriv;
 
-pub(crate) fn handle(
+pub(crate) fn process(
     key: XPriv,
     generator: impl crate::address::AddressGenerator + std::marker::Send + 'static,
     running: Arc<std::sync::atomic::AtomicBool>,
     generated_count: Arc<std::sync::atomic::AtomicUsize>,
     tx: Arc<std::sync::mpsc::Sender<crate::write::AddressRecord>>,
+    match_length: usize,
 ) -> Result<Vec<std::thread::JoinHandle<()>>, anyhow::Error> {
     let index_file_name = generator.index_file_name();
     let last_index = crate::address::read_last_index(&index_file_name)? as usize;
@@ -30,7 +31,7 @@ pub(crate) fn handle(
                             let index = index_counter.load(Ordering::Relaxed) as u32;
                             let address = generator.generate_address(&value, index);
                             if let Ok(address) = address {
-                                if crate::address::check_address(&address) {
+                                if crate::address::check_address(&address, match_length) {
                                     let record = crate::write::AddressRecord {
                                         address,
                                         index,

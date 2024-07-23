@@ -14,7 +14,6 @@ use std::sync::{
 };
 
 use clap::Parser as _;
-use handle::handle;
 
 fn main() -> Result<(), anyhow::Error> {
     tracing_subscriber::fmt::init();
@@ -27,6 +26,7 @@ fn main() -> Result<(), anyhow::Error> {
     let max_file_size = cli.max_file_size;
     let rotation_interval_secs = cli.rotation_interval_secs;
     let language = cli.language;
+    let match_length = cli.match_length;
 
     let (key, _) = xpriv::phrase_to_master_key(language, &phrase, &bip39_pw)?;
     let running = Arc::new(AtomicBool::new(true));
@@ -46,19 +46,21 @@ fn main() -> Result<(), anyhow::Error> {
     let timer_handle = timer::start_timer_thread(running_clone, generated_count_clone);
 
     // 启动多个线程来生成地址
-    let eth_handles = handle(
+    let eth_handles = handle::process(
         key.clone(),
         address::eth::EthereumAddressGenerator,
         running.clone(),
         generated_count.clone(),
         tx.clone(),
+        match_length,
     )?;
-    let tron_handles = handle(
+    let tron_handles = handle::process(
         key.clone(),
         address::trx::TronAddressGenerator,
         running.clone(),
         generated_count.clone(),
         tx.clone(),
+        match_length,
     )?;
 
     for handle in eth_handles.into_iter().chain(tron_handles) {
