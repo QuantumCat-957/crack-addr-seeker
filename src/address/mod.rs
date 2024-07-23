@@ -20,12 +20,18 @@ pub(crate) fn check_address(address: &str, match_length: usize) -> bool {
 }
 
 pub(crate) fn write_last_index(filename: &str, index: u32) -> Result<(), anyhow::Error> {
-    std::fs::write(filename, index.to_string())?;
+    let data_dir = std::path::Path::new("data");
+    std::fs::create_dir_all(data_dir).expect("Failed to create data directory");
+    let file_path = data_dir.join(filename);
+    std::fs::write(file_path, index.to_string())?;
     Ok(())
 }
 
 pub(crate) fn read_last_index(filename: &str) -> Result<u32, anyhow::Error> {
-    let content = std::fs::read_to_string(filename).unwrap_or_else(|_| "0".to_string());
+    let data_dir = std::path::Path::new("data");
+    std::fs::create_dir_all(data_dir).expect("Failed to create data directory");
+    let file_path = data_dir.join(filename);
+    let content = std::fs::read_to_string(file_path).unwrap_or_else(|_| "0".to_string());
     let index: u32 = content.trim().parse().unwrap_or(0);
     Ok(index)
 }

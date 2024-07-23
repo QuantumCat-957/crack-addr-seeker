@@ -16,10 +16,15 @@ pub(crate) struct AddressRecord {
 fn create_new_writer(prefix: &str) -> csv::Writer<File> {
     let timestamp = Local::now().format("%Y%m%d%H%M%S").to_string();
     let file_name = format!("{}_addresses_{}.csv", prefix, timestamp);
+    let data_dir = std::path::Path::new("data");
+    std::fs::create_dir_all(data_dir).expect("Failed to create data directory");
+
+    let file_path = data_dir.join(file_name);
+
     let file = OpenOptions::new()
         .create(true)
         .append(true)
-        .open(file_name)
+        .open(file_path)
         .expect("Failed to open file");
     csv::Writer::from_writer(file)
 }
