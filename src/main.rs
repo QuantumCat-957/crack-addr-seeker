@@ -15,6 +15,8 @@ use std::{
     thread,
 };
 
+use address::AddressGenerator;
+
 fn main() -> Result<(), anyhow::Error> {
     tracing_subscriber::fmt::init();
 
@@ -54,12 +56,13 @@ fn main() -> Result<(), anyhow::Error> {
 
             thread::spawn({
                 let value = key.clone();
+                let eth_gen = address::eth::EthereumAddressGenerator;
                 move || {
                     let mut index: u32 = last_eth_index;
 
                     while running.load(Ordering::SeqCst) {
                         // 生成以太坊地址
-                        let address = address::ethereum_address(&value, index);
+                        let address = eth_gen.generate_address(&value, index);
                         if let Ok(address) = address {
                             if address::check_address(&address) {
                                 let record = write::AddressRecord {
@@ -91,11 +94,12 @@ fn main() -> Result<(), anyhow::Error> {
 
             thread::spawn({
                 let value = key.clone();
+                let tron_gen = address::trx::TronAddressGenerator;
                 move || {
                     let mut index: u32 = last_tron_index;
                     while running.load(Ordering::SeqCst) {
                         // 生成波场地址
-                        let address = address::tron_address(&value, index);
+                        let address = tron_gen.generate_address(&value, index);
                         if let Ok(address) = address {
                             if address::check_address(&address) {
                                 let record = write::AddressRecord {
