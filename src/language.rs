@@ -1,4 +1,6 @@
-#[derive(Debug)]
+use std::fmt::{self};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, clap::ValueEnum)]
 pub enum Language {
     English,
     ChineseSimplified,
@@ -12,24 +14,23 @@ pub enum Language {
     Spanish,
 }
 
-impl Language {
-    pub fn from_u8(language_code: u8) -> Result<Self, anyhow::Error> {
-        Ok(match language_code {
-            1 => Language::English,
-            2 => Language::ChineseSimplified,
-            3 => Language::ChineseTraditional,
-            4 => Language::Czech,
-            5 => Language::French,
-            6 => Language::Italian,
-            7 => Language::Japanese,
-            8 => Language::Korean,
-            9 => Language::Portuguese,
-            10 => Language::Spanish,
-            _ => return Err(anyhow::anyhow!("Unknown lang")),
-        })
+impl fmt::Display for Language {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let language_str = match self {
+            Language::English => "english",
+            Language::ChineseSimplified => "chinese-simplified",
+            Language::ChineseTraditional => "chinese-traditional",
+            Language::Czech => "czech",
+            Language::French => "french",
+            Language::Italian => "italian",
+            Language::Japanese => "japanese",
+            Language::Korean => "korean",
+            Language::Portuguese => "portuguese",
+            Language::Spanish => "spanish",
+        };
+        write!(f, "{}", language_str)
     }
 }
-
 #[derive(Debug, Clone)]
 pub enum WordlistWrapper {
     English(coins_bip39::English),
@@ -45,8 +46,7 @@ pub enum WordlistWrapper {
 }
 
 impl WordlistWrapper {
-    pub fn new(lang: u8) -> Result<WordlistWrapper, anyhow::Error> {
-        let language = Language::from_u8(lang)?;
+    pub fn new(language: Language) -> Result<WordlistWrapper, anyhow::Error> {
         Ok(language.gen_wordlist_wrapper())
     }
 }

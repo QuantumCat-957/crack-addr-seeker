@@ -1,7 +1,3 @@
-Here's a sample `README.md` for your application:
-
----
-
 # Address Generator
 
 This application generates Ethereum and TRON addresses based on a given mnemonic phrase and BIP39 password. It supports multi-threaded address generation and writes the generated addresses to CSV files. You can configure the maximum file size and log rotation interval via command-line arguments.

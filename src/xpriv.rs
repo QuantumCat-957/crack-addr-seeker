@@ -1,8 +1,10 @@
 use coins_bip39::Mnemonic;
 
+use crate::language::Language;
+
 // 助记词->Mnemonic->root key
 pub fn phrase_to_master_key(
-    language_code: u8,
+    language_code: Language,
     phrase: &str,
     password: &str,
 ) -> Result<(coins_bip32::xkeys::XPriv, Vec<u8>), anyhow::Error> {

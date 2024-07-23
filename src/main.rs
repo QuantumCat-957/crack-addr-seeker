@@ -26,8 +26,9 @@ fn main() -> Result<(), anyhow::Error> {
     let bip39_pw = cli.password;
     let max_file_size = cli.max_file_size;
     let rotation_interval_secs = cli.rotation_interval_secs;
+    let language = cli.language;
 
-    let (key, _) = xpriv::phrase_to_master_key(1, &phrase, &bip39_pw)?;
+    let (key, _) = xpriv::phrase_to_master_key(language, &phrase, &bip39_pw)?;
     let running = Arc::new(AtomicBool::new(true));
     let running_clone = Arc::clone(&running);
     let generated_count = Arc::new(AtomicUsize::new(0));
