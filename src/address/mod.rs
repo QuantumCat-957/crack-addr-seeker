@@ -14,7 +14,7 @@ pub trait AddressGenerator: Copy {
 
 pub(crate) fn check_address(address: &str) -> bool {
     let len = address.len();
-    address[len - 2..]
+    address[len - 4..]
         .chars()
         .all(|c| c == address.chars().nth(len - 1).unwrap())
 }
