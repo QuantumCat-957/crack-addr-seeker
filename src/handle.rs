@@ -1,4 +1,7 @@
-use std::sync::{atomic::Ordering, Arc};
+use std::sync::{
+    atomic::{AtomicUsize, Ordering},
+    Arc,
+};
 
 use coins_bip32::xkeys::XPriv;
 
@@ -10,7 +13,8 @@ pub(crate) fn handle(
     tx: Arc<std::sync::mpsc::Sender<crate::write::AddressRecord>>,
 ) -> Result<Vec<std::thread::JoinHandle<()>>, anyhow::Error> {
     let index_file_name = generator.index_file_name();
-    let last_index = crate::address::read_last_index(&index_file_name)?;
+    let last_index = crate::address::read_last_index(&index_file_name)? as usize;
+    let index_counter = Arc::new(AtomicUsize::new(last_index));
     let handles: Vec<_> = (0..num_cpus::get() / 2)
         .map(|_| {
             let running = Arc::clone(&running);
@@ -18,13 +22,13 @@ pub(crate) fn handle(
             let tx = Arc::clone(&tx);
             std::thread::spawn({
                 let value = key.clone();
+                let index_file_name = index_file_name.clone();
+                let index_counter = index_counter.clone();
                 {
-                    let index_file_name = index_file_name.clone();
                     move || {
-                        let mut index: u32 = last_index;
-
                         while running.load(Ordering::SeqCst) {
-                            // 生成以太坊地址
+                            let index = index_counter.fetch_add(1, Ordering::SeqCst) as u32; // 获取并增加索引
+                                                                                             // 生成以太坊地址
                             let address = generator.generate_address(&value, index);
                             if let Ok(address) = address {
                                 if crate::address::check_address(&address) {
@@ -37,8 +41,6 @@ pub(crate) fn handle(
                                 }
                                 generated_count.fetch_add(1, Ordering::SeqCst);
                             }
-
-                            index += 1;
 
                             if index % 100 == 0 {
                                 crate::address::write_last_index(&index_file_name, index as u32)

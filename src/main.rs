@@ -27,9 +27,6 @@ fn main() -> Result<(), anyhow::Error> {
     let generated_count = Arc::new(AtomicUsize::new(0));
     let generated_count_clone = Arc::clone(&generated_count);
 
-    let eth_index_file = "eth_last_index.txt";
-    let tron_index_file = "tron_last_index.txt";
-
     // 创建一个通道，用于发送地址写入任务
     let (tx, rx) = mpsc::channel::<write::AddressRecord>();
     let tx = Arc::new(tx);
