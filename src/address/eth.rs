@@ -1,3 +1,4 @@
+#[derive(Clone, Copy)]
 pub struct EthereumAddressGenerator;
 impl super::AddressGenerator for EthereumAddressGenerator {
     fn generate_address(
@@ -11,5 +12,13 @@ impl super::AddressGenerator for EthereumAddressGenerator {
 
         let address = alloy::signers::utils::secret_key_to_address(signingkey);
         Ok(address.to_string())
+    }
+
+    fn address_type(&self) -> String {
+        "eth".to_string()
+    }
+
+    fn index_file_name(&self) -> String {
+        "eth_last_index.txt".to_string()
     }
 }

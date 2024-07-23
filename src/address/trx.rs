@@ -1,5 +1,6 @@
 use anychain_core::Address as _;
 
+#[derive(Clone, Copy)]
 pub struct TronAddressGenerator;
 
 impl super::AddressGenerator for TronAddressGenerator {
@@ -20,5 +21,13 @@ impl super::AddressGenerator for TronAddressGenerator {
         )
         .unwrap();
         Ok(address.to_string())
+    }
+
+    fn address_type(&self) -> String {
+        "tron".to_string()
+    }
+
+    fn index_file_name(&self) -> String {
+        "tron_last_index.txt".to_string()
     }
 }

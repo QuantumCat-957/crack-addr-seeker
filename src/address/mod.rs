@@ -1,12 +1,15 @@
 pub(crate) mod eth;
 pub(crate) mod trx;
 
-pub trait AddressGenerator {
+pub trait AddressGenerator: Copy {
     fn generate_address(
         &self,
         key: &coins_bip32::xkeys::XPriv,
         index: u32,
     ) -> Result<String, anyhow::Error>;
+
+    fn address_type(&self) -> String;
+    fn index_file_name(&self) -> String;
 }
 
 pub(crate) fn check_address(address: &str) -> bool {
