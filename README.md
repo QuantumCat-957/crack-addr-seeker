@@ -41,7 +41,7 @@
 
 生成末尾匹配长度为 6 的以太坊和波场地址，使用自定义助记词和密码：
 ```bash
-target/release/crack-addr-seeker --phrase 'fan swamp loop mesh enact tennis priority artefact canal hour skull joy' --password '123' --max-file-size 104857600 --rotation-interval-secs 3600 --language english --eth-match-length 6
+target/release/crack-addr-seeker --phrase 'fan swamp loop mesh enact tennis priority artefact canal hour skull joy' --password '123' --max-file-size 104857600 --rotation-interval-secs 3600 --language english --eth-match-length 6 --tron-match-length 4
 ```
 
 ## 文件结构

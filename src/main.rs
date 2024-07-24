@@ -23,8 +23,8 @@ fn main() -> Result<(), anyhow::Error> {
 
     let phrase = cli.phrase;
     let bip39_pw = cli.password;
-    let max_file_size = cli.max_file_size;
-    let rotation_interval_secs = cli.rotation_interval_secs;
+    // let max_file_size = cli.max_file_size;
+    // let rotation_interval_secs = cli.rotation_interval_secs;
     let language = cli.language;
     let eth_match_length = cli.eth_match_length;
     let trx_match_length = cli.tron_match_length;
@@ -39,9 +39,9 @@ fn main() -> Result<(), anyhow::Error> {
     let (tx, rx) = mpsc::channel::<write::AddressRecord>();
     let tx = Arc::new(tx);
 
-    let rotation_interval = std::time::Duration::from_secs(rotation_interval_secs); // 1 hour
-                                                                                    // 启动一个线程来处理写入文件任务
-    let writer_handle = write::start_writer_thread(rx, max_file_size as u64, rotation_interval);
+    // let rotation_interval = std::time::Duration::from_secs(rotation_interval_secs); // 1 hour
+    // 启动一个线程来处理写入文件任务
+    let writer_handle = write::start_writer_thread(rx);
 
     // 启动计时器线程，每秒输出生成的地址数
     let timer_handle = timer::start_timer_thread(running_clone, generated_count_clone);
