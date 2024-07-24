@@ -26,7 +26,8 @@ fn main() -> Result<(), anyhow::Error> {
     let max_file_size = cli.max_file_size;
     let rotation_interval_secs = cli.rotation_interval_secs;
     let language = cli.language;
-    let match_length = cli.match_length;
+    let eth_match_length = cli.eth_match_length;
+    let trx_match_length = cli.trx_match_length;
 
     let (key, _) = xpriv::phrase_to_master_key(language, &phrase, &bip39_pw)?;
     let running = Arc::new(AtomicBool::new(true));
@@ -52,7 +53,7 @@ fn main() -> Result<(), anyhow::Error> {
         running.clone(),
         generated_count.clone(),
         tx.clone(),
-        match_length,
+        eth_match_length,
     )?;
     let tron_handles = handle::process(
         key.clone(),
@@ -60,7 +61,7 @@ fn main() -> Result<(), anyhow::Error> {
         running.clone(),
         generated_count.clone(),
         tx.clone(),
-        match_length,
+        trx_match_length,
     )?;
 
     for handle in eth_handles.into_iter().chain(tron_handles) {

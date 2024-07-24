@@ -13,9 +13,9 @@ pub(crate) struct AddressRecord {
     pub(crate) address_type: String,
 }
 
-fn create_new_writer(prefix: &str) -> csv::Writer<File> {
+fn create_new_writer() -> csv::Writer<File> {
     let timestamp = Local::now().format("%Y%m%d%H%M%S").to_string();
-    let file_name = format!("{}_addresses_{}.csv", prefix, timestamp);
+    let file_name = format!("addresses_{}.csv", timestamp);
     let data_dir = std::path::Path::new("data");
     std::fs::create_dir_all(data_dir).expect("Failed to create data directory");
 
@@ -45,38 +45,34 @@ pub fn start_writer_thread(
     rotation_interval: Duration,
 ) -> thread::JoinHandle<()> {
     thread::spawn(move || {
-        let mut eth_writer = create_new_writer("eth");
-        let mut tron_writer = create_new_writer("tron");
+        let mut writer = create_new_writer();
+        // let mut tron_writer = create_new_writer("tron");
         let start = Instant::now();
 
         for record in rx {
-            if start.elapsed() >= rotation_interval
-                || check_file_size(&mut eth_writer, max_file_size)
-            {
-                eth_writer = create_new_writer("eth");
+            if start.elapsed() >= rotation_interval || check_file_size(&mut writer, max_file_size) {
+                writer = create_new_writer();
             }
-            if start.elapsed() >= rotation_interval
-                || check_file_size(&mut tron_writer, max_file_size)
-            {
-                tron_writer = create_new_writer("tron");
+            if start.elapsed() >= rotation_interval || check_file_size(&mut writer, max_file_size) {
+                writer = create_new_writer();
             }
 
             match record.address_type.as_str() {
                 "eth" => {
-                    eth_writer
+                    writer
                         .write_record(&[record.address, record.index.to_string()])
                         .expect("Failed to write to file");
                 }
                 "tron" => {
-                    tron_writer
+                    writer
                         .write_record(&[record.address, record.index.to_string()])
                         .expect("Failed to write to file");
                 }
                 _ => {}
             }
 
-            eth_writer.flush().expect("Failed to flush eth writer");
-            tron_writer.flush().expect("Failed to flush tron writer");
+            writer.flush().expect("Failed to flush eth writer");
+            // tron_writer.flush().expect("Failed to flush tron writer");
         }
     })
 }
