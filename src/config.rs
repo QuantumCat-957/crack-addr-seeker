@@ -21,8 +21,8 @@ pub(crate) struct Cli {
     pub(crate) max_file_size: u64,
     #[clap(long, default_value_t = 3600)]
     pub(crate) rotation_interval_secs: u64,
-    #[clap(long, default_value_t = 3)]
+    #[clap(long, default_value_t = 6)]
     pub eth_match_length: usize,
-    #[clap(long, default_value_t = 3)]
-    pub trx_match_length: usize,
+    #[clap(long, default_value_t = 4)]
+    pub tron_match_length: usize,
 }

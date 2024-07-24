@@ -27,7 +27,7 @@ fn main() -> Result<(), anyhow::Error> {
     let rotation_interval_secs = cli.rotation_interval_secs;
     let language = cli.language;
     let eth_match_length = cli.eth_match_length;
-    let trx_match_length = cli.trx_match_length;
+    let trx_match_length = cli.tron_match_length;
 
     let (key, _) = xpriv::phrase_to_master_key(language, &phrase, &bip39_pw)?;
     let running = Arc::new(AtomicBool::new(true));
