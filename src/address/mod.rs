@@ -1,5 +1,5 @@
-pub(crate) mod eth;
-pub(crate) mod trx;
+pub mod eth;
+pub mod trx;
 
 pub trait AddressGenerator: Copy {
     fn generate_address(
@@ -12,14 +12,14 @@ pub trait AddressGenerator: Copy {
     fn index_file_name(&self) -> String;
 }
 
-pub(crate) fn check_address(address: &str, match_length: usize) -> bool {
+pub fn check_address(address: &str, match_length: usize) -> bool {
     let len = address.len();
     address[len - match_length..]
         .chars()
         .all(|c| c == address.chars().nth(len - 1).unwrap())
 }
 
-pub(crate) fn write_last_index(filename: &str, index: u32) -> Result<(), anyhow::Error> {
+pub fn write_last_index(filename: &str, index: u32) -> Result<(), anyhow::Error> {
     let data_dir = std::path::Path::new("data");
     std::fs::create_dir_all(data_dir).expect("Failed to create data directory");
     let file_path = data_dir.join(filename);
@@ -27,7 +27,7 @@ pub(crate) fn write_last_index(filename: &str, index: u32) -> Result<(), anyhow:
     Ok(())
 }
 
-pub(crate) fn read_last_index(filename: &str) -> Result<u32, anyhow::Error> {
+pub fn read_last_index(filename: &str) -> Result<u32, anyhow::Error> {
     let data_dir = std::path::Path::new("data");
     std::fs::create_dir_all(data_dir).expect("Failed to create data directory");
     let file_path = data_dir.join(filename);

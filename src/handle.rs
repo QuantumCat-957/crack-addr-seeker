@@ -5,7 +5,7 @@ use std::sync::{
 
 use coins_bip32::xkeys::XPriv;
 
-pub(crate) fn process(
+pub fn process(
     key: XPriv,
     generator: impl crate::address::AddressGenerator + std::marker::Send + 'static,
     running: Arc<std::sync::atomic::AtomicBool>,

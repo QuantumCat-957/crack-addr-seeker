@@ -5,10 +5,10 @@ use std::{
     thread,
 };
 
-pub(crate) struct AddressRecord {
-    pub(crate) address: String,
-    pub(crate) index: u32,
-    pub(crate) address_type: String,
+pub struct AddressRecord {
+    pub address: String,
+    pub index: u32,
+    pub address_type: String,
 }
 
 fn create_new_writer(prefix: &str) -> csv::Writer<File> {

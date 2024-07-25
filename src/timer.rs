@@ -7,7 +7,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-pub(crate) fn start_timer_thread(
+pub fn start_timer_thread(
     running: Arc<AtomicBool>,
     generated_count: Arc<AtomicUsize>,
 ) -> thread::JoinHandle<()> {
