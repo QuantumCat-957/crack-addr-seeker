@@ -5,7 +5,7 @@ pub trait AddressGenerator: Copy {
     fn generate_address(
         &self,
         key: &coins_bip32::xkeys::XPriv,
-        index: u32,
+        index: isize,
     ) -> Result<String, anyhow::Error>;
 
     fn address_type(&self) -> String;
@@ -19,19 +19,33 @@ pub fn check_address(address: &str, match_length: usize) -> bool {
         .all(|c| c == address.chars().nth(len - 1).unwrap())
 }
 
-pub fn write_last_index(filename: &str, index: u32) -> Result<(), anyhow::Error> {
-    let data_dir = std::path::Path::new("data");
-    std::fs::create_dir_all(data_dir).expect("Failed to create data directory");
+pub fn write_last_index(
+    path: Option<&str>,
+    filename: &str,
+    index: isize,
+) -> Result<(), anyhow::Error> {
+    let data_dir = if let Some(path) = path {
+        std::path::Path::new(path).join("data")
+    } else {
+        std::path::Path::new("data").to_path_buf()
+    };
+    std::fs::create_dir_all(&data_dir).expect("Failed to create data directory");
     let file_path = data_dir.join(filename);
+    tracing::info!("[write_last_index] file_path: {file_path:?}");
     std::fs::write(file_path, index.to_string())?;
     Ok(())
 }
 
-pub fn read_last_index(filename: &str) -> Result<u32, anyhow::Error> {
-    let data_dir = std::path::Path::new("data");
-    std::fs::create_dir_all(data_dir).expect("Failed to create data directory");
+pub fn read_last_index(path: Option<&str>, filename: &str) -> Result<isize, anyhow::Error> {
+    let data_dir = if let Some(path) = path {
+        std::path::Path::new(path).join("data")
+    } else {
+        std::path::Path::new("data").to_path_buf()
+    };
+    std::fs::create_dir_all(&data_dir).expect("Failed to create data directory");
     let file_path = data_dir.join(filename);
+    tracing::info!("[read_last_index] file_path: {file_path:?}");
     let content = std::fs::read_to_string(file_path).unwrap_or_else(|_| "0".to_string());
-    let index: u32 = content.trim().parse().unwrap_or(0);
+    let index = content.trim().parse().unwrap_or(0);
     Ok(index)
 }

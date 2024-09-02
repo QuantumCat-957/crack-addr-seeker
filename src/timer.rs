@@ -1,6 +1,6 @@
 use std::{
     sync::{
-        atomic::{AtomicBool, AtomicUsize, Ordering},
+        atomic::{AtomicBool, AtomicIsize, Ordering},
         Arc,
     },
     thread,
@@ -9,7 +9,7 @@ use std::{
 
 pub fn start_timer_thread(
     running: Arc<AtomicBool>,
-    generated_count: Arc<AtomicUsize>,
+    generated_count: Arc<AtomicIsize>,
 ) -> thread::JoinHandle<()> {
     thread::spawn(move || {
         let start = Instant::now();

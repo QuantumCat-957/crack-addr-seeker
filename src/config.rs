@@ -25,4 +25,6 @@ pub struct Cli {
     pub eth_match_length: usize,
     #[clap(long, default_value_t = 4)]
     pub tron_match_length: usize,
+    #[clap(long, default_value_t = false)]
+    pub reverse_index: bool,
 }
