@@ -10,7 +10,9 @@ impl super::AddressGenerator for TronAddressGenerator {
         index: isize,
     ) -> Result<String, anyhow::Error> {
         let path = if index < 0 {
-            let i = index.strict_add_unsigned(coins_bip32::BIP32_HARDEN as usize) as u32;
+            let i = index
+                .checked_add_unsigned(coins_bip32::BIP32_HARDEN as usize)
+                .ok_or(anyhow::anyhow!("index overflow occured"))? as u32;
             crate::constant::add_index(crate::constant::TRON_HARD_DERIVATION_PATH, i, true)
         } else {
             let i = index as u32;
