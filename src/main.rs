@@ -16,7 +16,6 @@ fn main() -> Result<(), anyhow::Error> {
     let reverse_index = cli.reverse_index;
     let eth_match_length = cli.eth_match_length;
     let trx_match_length = cli.tron_match_length;
-
     crack_addr_seeker::run(
         None,
         language,

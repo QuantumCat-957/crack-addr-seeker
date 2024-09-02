@@ -1,6 +1,6 @@
 #![feature(strict_overflow_ops)]
 use std::sync::{
-    atomic::{AtomicBool, AtomicIsize, Ordering},
+    atomic::{AtomicBool, AtomicIsize},
     Arc,
 };
 

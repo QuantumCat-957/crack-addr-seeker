@@ -65,10 +65,10 @@ pub fn process(
                                 );
                                 // tracing::error!("[write_last_index] res: {res:?}");
                             }
-                            // 获取并增加索引
                             if reverse_index {
                                 index_counter.fetch_sub(1, Ordering::Relaxed);
                             } else {
+                                // 获取并增加索引
                                 index_counter.fetch_add(1, Ordering::Relaxed);
                             }
                         }

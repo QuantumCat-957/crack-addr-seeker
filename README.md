@@ -36,12 +36,13 @@
 - `--language <LANGUAGE>`: 助记词语言，支持的语言包括：`english`、`chinese-simplified`、`chinese-traditional`、`czech`、`french`、`italian`、`japanese`、`korean`、`portuguese`、`spanish`。默认为 `english`。
 - `--eth-match-length <LENGTH>`: 地址末尾匹配的字符数，默认为 `6`。
 - `--tron-match-length <LENGTH>`: 地址末尾匹配的字符数，默认为 `4`。
+- `--reverse-index`: 指定是否反向递增派生路径的索引值。默认情况下，索引值是正向递增的。如果设置此选项为 `true`，则索引值将从负数开始反向递增。
 
 ### 示例
 
-生成末尾匹配长度为 6 的以太坊和波场地址，使用自定义助记词和密码：
+反向递增派生路径索引值，生成末尾匹配长度为 6 的以太坊和波场地址，使用自定义助记词和密码：
 ```bash
-target/release/crack-addr-seeker --phrase 'fan swamp loop mesh enact tennis priority artefact canal hour skull joy' --password '123' --max-file-size 104857600 --rotation-interval-secs 3600 --language english --eth-match-length 6 --tron-match-length 4
+target/release/crack-addr-seeker --phrase 'fan swamp loop mesh enact tennis priority artefact canal hour skull joy' --password '123' --max-file-size 104857600 --rotation-interval-secs 3600 --language english --eth-match-length 6 --tron-match-length 4 --reverse-index
 ```
 
 ## 文件结构
