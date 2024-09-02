@@ -19,7 +19,7 @@ impl super::AddressGenerator for EthereumAddressGenerator {
         let signingkey: &coins_bip32::ecdsa::SigningKey = derive.as_ref();
 
         let address = alloy::signers::utils::secret_key_to_address(signingkey);
-        tracing::info!("address: {:?}, path: {}", address, path);
+        // tracing::info!("address: {:?}, path: {}", address, path);
         Ok(address.to_string())
     }
 

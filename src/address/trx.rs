@@ -27,7 +27,7 @@ impl super::AddressGenerator for TronAddressGenerator {
             &anychain_tron::TronFormat::Standard,
         )
         .unwrap();
-        tracing::info!("address: {:?}, path: {}", address, path);
+        // tracing::info!("address: {:?}, path: {}", address, path);
         Ok(address.to_string())
     }
 

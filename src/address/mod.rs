@@ -31,7 +31,7 @@ pub fn write_last_index(
     };
     std::fs::create_dir_all(&data_dir).expect("Failed to create data directory");
     let file_path = data_dir.join(filename);
-    tracing::info!("[write_last_index] file_path: {file_path:?}");
+    // tracing::info!("[write_last_index] file_path: {file_path:?}");
     std::fs::write(file_path, index.to_string())?;
     Ok(())
 }
